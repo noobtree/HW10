@@ -87,6 +87,12 @@ UUserWidget* ULocalWidgetManager::AddWidget(const FName& WidgetName, const TSubc
 	// Instance 저장
 	WidgetMap[WidgetName] = WidgetInstance;
 
+	// 해당 이름의 Widget을 기다리고 있는 이벤트 실행
+	for (const FOnWidgetCreatedDelegate& Callback : PendingTasks[WidgetName])
+	{
+		Callback.ExecuteIfBound(WidgetInstance);
+	}
+
 	// Instance 반환
 	return WidgetInstance;
 }
@@ -109,7 +115,33 @@ bool ULocalWidgetManager::AddWidgetInstance(const FName& WidgetName, UUserWidget
 
 	// 새로운 Widget Instance 저장
 	WidgetMap[WidgetName] = WidgetInstance;
+
+	// 해당 이름의 Widget을 기다리고 있는 이벤트 실행
+	for (const FOnWidgetCreatedDelegate& Callback : PendingTasks[WidgetName])
+	{
+		Callback.ExecuteIfBound(WidgetInstance);
+	}
 	return true;
+}
+
+void ULocalWidgetManager::RequestAsync(const FName& WidgetName, const FOnWidgetCreatedDelegate Callback)
+{
+	// 조건이 되는 Widget의 이름 유효성 확인
+	if (WidgetName.IsNone() == true)
+	{
+		return;
+	}
+
+	// 동일한 이름으로 생성되어있는 Widget 검색
+	if (UUserWidget* WidgetInstance = FindWidget(WidgetName))
+	{
+		// 즉시 실행
+		Callback.ExecuteIfBound(WidgetInstance);
+		return;
+	}
+
+	// 대기열 추가
+	PendingTasks.FindOrAdd(WidgetName).Add(Callback);
 }
 
 bool ULocalWidgetManager::RemoveWidget(const FName& WidgetName)

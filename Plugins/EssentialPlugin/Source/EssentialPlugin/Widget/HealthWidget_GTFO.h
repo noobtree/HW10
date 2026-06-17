@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "HealthWidget.h"
 #include "Components/TimelineComponent.h"
 #include "HealthWidget_GTFO.generated.h"
 
@@ -11,7 +12,7 @@
  * 
  */
 UCLASS()
-class ESSENTIALPLUGIN_API UHealthWidget_GTFO : public UUserWidget
+class ESSENTIALPLUGIN_API UHealthWidget_GTFO : public UHealthWidget
 {
 	GENERATED_BODY()
 	
@@ -58,12 +59,10 @@ protected:
 	UPROPERTY()
 	FTimeline DamageBarShrinkTimeline;
 
-public:
-	// 임의 컴포넌트에 맞추어 Widget의 초기 설정을 진행하는 함수
-	UFUNCTION(BlueprintCallable)
-	virtual void InitializeWidget(UActorComponent* component);
-
 protected:
+	// 임의 컴포넌트에 맞추어 Widget의 초기 설정을 진행하는 함수
+	virtual void InitializeWidgetByComponent_Implementation(UActorComponent* Component) override;
+
 	// HealthComponent의 체력 변경 이벤트 발생 시 Widget에 연동하는 함수
 	UFUNCTION()
 	virtual void OnHealthChanged(float CurrentHealth, float MaxHealth);

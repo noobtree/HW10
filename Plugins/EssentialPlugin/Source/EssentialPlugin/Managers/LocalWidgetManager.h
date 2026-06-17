@@ -7,6 +7,8 @@
 #include "Blueprint/UserWidget.h"
 #include "LocalWidgetManager.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWidgetCreatedDelegate, UUserWidget*, CreatedWidget);
+
 /**
  * 
  */
@@ -16,8 +18,12 @@ class ESSENTIALPLUGIN_API ULocalWidgetManager : public ULocalPlayerSubsystem
 	GENERATED_BODY()
 	
 protected:
+	// 등록된 Widget Instance들을 이름에 따라 저장하는 컨테이터
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName, TObjectPtr<UUserWidget>> WidgetMap;
+
+	// 동일한 이름으로 Widget Instance가 등록되었을 때 실행되는 함수들을 저장하는 컨테이너
+	TMap<FName, TArray<FOnWidgetCreatedDelegate>> PendingTasks;
 
 public:
 	UFUNCTION()
@@ -63,6 +69,10 @@ public:
 	// Instance 등록에 실패하는 경우 false 반환
 	UFUNCTION(BlueprintCallable)
 	bool AddWidgetInstance(const FName& WidgetName, UUserWidget* WidgetInstance);
+
+	// 임의 이름으로 Widget Instance가 등록되면 동작시키는 비동기 함수
+	UFUNCTION(BlueprintCallable)
+	void RequestAsync(const FName& WidgetName, const FOnWidgetCreatedDelegate Callback);
 
 	// 임의 이름으로 등록된 Widget Instance를 제거하는 함수
 	UFUNCTION(BlueprintCallable)

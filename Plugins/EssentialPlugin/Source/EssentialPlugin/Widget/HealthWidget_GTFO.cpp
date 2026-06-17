@@ -32,21 +32,26 @@ void UHealthWidget_GTFO::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	DamageBarShrinkTimeline.TickTimeline(InDeltaTime);
 }
 
-void UHealthWidget_GTFO::InitializeWidget(UActorComponent* component)
+void UHealthWidget_GTFO::InitializeWidgetByComponent_Implementation(UActorComponent* Component)
 {
 	// 화면 해상도에 따른 체력바의 크기 설정
 	HealthBarMaxWidth = GSystemResolution.ResX * 0.15;
 
-	UHealthComponent* HealthComponent = Cast<UHealthComponent>(component);
+	// HealthComponent 확인
+	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Component);
 	if (IsValid(HealthComponent) == true)
 	{
+		// 현재 체력 상태에 맞추어 UI 업데이트
+		OnHealthChanged(HealthComponent->GetCurrentHealth(), HealthComponent->GetMaxHealth());
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("HealthWidget Has not Initialized with Health Component!"));
+		// 체력 0% 상태로 업데이트
+		OnHealthChanged(0, 100);
 	}
 
-	// 데미지 표시의 크기를 체력바 크기와 동일하게 설정
+	// 데미지 표시의 크기를 체력바 크기와 동일하게 설정 (최초 체력바 UI 생성 시 피격되는 듯한 착시 제거)
 	SizeBox_LeftDamageBar->SetWidthOverride(SizeBox_LeftHealthBar->GetWidthOverride());
 	SizeBox_RightDamageBar->SetWidthOverride(SizeBox_RightHealthBar->GetWidthOverride());
 }

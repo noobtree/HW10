@@ -57,9 +57,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 
-	// 체력 Widget
+	// Local Client에서 표시될 체력 Widget
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UUserWidget> WidgetClass;
+	TSubclassOf<UUserWidget> LocalWidgetClass;
+
+	// Other Client에서 표시될 체력 Widget
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UUserWidget> RemoteWidgetClass;
 
 #pragma endregion
 

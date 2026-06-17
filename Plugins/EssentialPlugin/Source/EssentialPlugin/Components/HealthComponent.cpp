@@ -4,7 +4,7 @@
 #include "HealthComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Managers/LocalWidgetManager.h"
-#include "Widget/HealthWidget_GTFO.h"
+#include "Widget/WidgetInitializeUtilityInterface.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -69,29 +69,68 @@ void UHealthComponent::SetMaxHealth(float NewMaxHealth)
 
 void UHealthComponent::InitWidget()
 {
+	AActor* Owner = GetOwner();
+	if (IsValid(Owner) == false)
+	{
+		return;
+	}
+
 	// Server 실행 방지
-	if (IsValid(GetOwner()) == true && GetOwner()->HasAuthority() == true)
+	if (Owner->HasAuthority() == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UHealthComponent::InitWidget Function can not be operated on Server"));
+		UE_LOG(LogTemp, Warning, TEXT("! UHealthComponent::InitWidget Function can not be operated on Server"));
 		return;
 	}
 
-	// WidgetManager 얻기
-	ULocalWidgetManager* WidgetManager = ULocalWidgetManager::GetInstance(this);
-	if (IsValid(WidgetManager) == false)
+	// Local Client의 경우
+	if (Owner->HasLocalNetOwner() == true)
 	{
+		UE_LOG(LogTemp, Display, TEXT("# Local Client UHealthComponent::InitWidget Function - Start"));
+
+		// WidgetManager 얻기
+		ULocalWidgetManager* WidgetManager = ULocalWidgetManager::GetInstance(this);
+		if (IsValid(WidgetManager) == false)
+		{
+			return;
+		}
+
+		// Widget 생성
+		UUserWidget* HealthWidget = WidgetManager->AddWidget(FName("Health"), LocalWidgetClass);
+		if (HealthWidget == nullptr)
+		{
+			return;
+		}
+
+		HealthWidget->AddToViewport();
+		IWidgetInitializeUtilityInterface::Execute_InitializeWidgetByComponent(HealthWidget, this);
+
+		UE_LOG(LogTemp, Display, TEXT("# Local Client UHealthComponent::InitWidget Function - End"));
 		return;
 	}
-
-	// Widget 생성
-	UHealthWidget_GTFO* HealthWidget = WidgetManager->AddWidget<UHealthWidget_GTFO>(FName("Health"), WidgetClass);
-	if (HealthWidget == nullptr)
+	else
 	{
+		UE_LOG(LogTemp, Display, TEXT("# Other Client UHealthComponent::InitWidget Function - Start"));
+
+		// WidgetManager 얻기
+		ULocalWidgetManager* WidgetManager = ULocalWidgetManager::GetInstance(this);
+		if (IsValid(WidgetManager) == false)
+		{
+			return;
+		}
+
+		// Widget 생성
+		UUserWidget* HealthWidget = WidgetManager->AddWidget(FName("Health"), RemoteWidgetClass);
+		if (HealthWidget == nullptr)
+		{
+			return;
+		}
+
+		HealthWidget->AddToViewport();
+		IWidgetInitializeUtilityInterface::Execute_InitializeWidgetByComponent(HealthWidget, this);
+
+		UE_LOG(LogTemp, Display, TEXT("# Other Client UHealthComponent::InitWidget Function - End"));
 		return;
 	}
-
-	HealthWidget->AddToViewport();
-	HealthWidget->InitializeWidget(this);
 }
 
 void UHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
