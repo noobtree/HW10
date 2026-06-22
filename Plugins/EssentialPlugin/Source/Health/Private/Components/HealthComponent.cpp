@@ -1,10 +1,15 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HealthComponent.h"
+#include "Components/HealthComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/GameState.h"
 #include "Managers/LocalWidgetManager.h"
-#include "Widget/WidgetInitializeUtilityInterface.h"
+#include "Widgets/WidgetInitializeUtilityInterface.h"
+#include "LogUtility.h"
+
+// UHealthComponent 클래스에서 사용할 UE_LOG 카테고리 선언 및 정의
+DEFINE_LOG_CATEGORY_STATIC(HealthComponent, Log, All);
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -16,7 +21,6 @@ UHealthComponent::UHealthComponent()
 	// ...
 	SetIsReplicatedByDefault(true);
 }
-
 
 // Called when the game starts
 void UHealthComponent::BeginPlay()
@@ -31,7 +35,6 @@ void UHealthComponent::BeginPlay()
 		GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::OnTakeAnyDamage);
 	}
 }
-
 
 // Called every frame
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -53,7 +56,7 @@ void UHealthComponent::SetMaxHealth(float NewMaxHealth)
 	// Client 실행 방지
 	if (IsValid(GetOwner()) == false || GetOwner()->HasAuthority() == false)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, TEXT("UHealthComponent::SetMaxHealth Function can not be operated on Client"));
+		UE_LOG(HealthComponent, Warning, TEXT("# %s - This Function can be operated in Server only"), FUNCTION_SIG);
 		return;
 	}
 
@@ -72,20 +75,21 @@ void UHealthComponent::InitWidget()
 	AActor* Owner = GetOwner();
 	if (IsValid(Owner) == false)
 	{
+		UE_LOG(HealthComponent, Warning, TEXT("# %s - Invalid Component Owner"), FUNCTION_SIG);
 		return;
 	}
 
 	// Server 실행 방지
 	if (Owner->HasAuthority() == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("! UHealthComponent::InitWidget Function can not be operated on Server"));
+		UE_LOG(HealthComponent, Warning, TEXT("# %s - This Function can be operated in Client only"), FUNCTION_SIG);
 		return;
 	}
 
 	// Local Client의 경우
 	if (Owner->HasLocalNetOwner() == true)
 	{
-		UE_LOG(LogTemp, Display, TEXT("# Local Client UHealthComponent::InitWidget Function - Start"));
+		UE_LOG(HealthComponent, Display, TEXT("# %s - Local Client"), FUNCTION_SIG);
 
 		// WidgetManager 얻기
 		ULocalWidgetManager* WidgetManager = ULocalWidgetManager::GetInstance(this);
@@ -103,13 +107,12 @@ void UHealthComponent::InitWidget()
 
 		HealthWidget->AddToViewport();
 		IWidgetInitializeUtilityInterface::Execute_InitializeWidgetByComponent(HealthWidget, this);
-
-		UE_LOG(LogTemp, Display, TEXT("# Local Client UHealthComponent::InitWidget Function - End"));
 		return;
 	}
+	// Other Client의 경우
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("# Other Client UHealthComponent::InitWidget Function - Start"));
+		UE_LOG(HealthComponent, Display, TEXT("# %s - Other Client"), FUNCTION_SIG);
 
 		// WidgetManager 얻기
 		ULocalWidgetManager* WidgetManager = ULocalWidgetManager::GetInstance(this);
@@ -127,8 +130,6 @@ void UHealthComponent::InitWidget()
 
 		HealthWidget->AddToViewport();
 		IWidgetInitializeUtilityInterface::Execute_InitializeWidgetByComponent(HealthWidget, this);
-
-		UE_LOG(LogTemp, Display, TEXT("# Other Client UHealthComponent::InitWidget Function - End"));
 		return;
 	}
 }
@@ -138,7 +139,7 @@ void UHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const
 	// Client 실행 방지
 	if (IsValid(GetOwner()) == false || GetOwner()->HasAuthority() == false)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange, TEXT("UHealthComponent::OnTakeAnyDamage Function can not be operated on Client"));
+		UE_LOG(HealthComponent, Warning, TEXT("# %s - This Function can be operated in Server only"), FUNCTION_SIG);
 		return;
 	}
 
@@ -163,7 +164,7 @@ void UHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const
 
 void UHealthComponent::OnRep_CurrentHealth()
 {
-	UE_LOG(LogTemp, Display, TEXT("UHealthComponent::CurrentHealth Property changed to %f"), CurrentHealth);
+	UE_LOG(HealthComponent, Display, TEXT("# %s - CurrentHealth was replicated"), FUNCTION_SIG);
 
 	// 체력 변화 이벤트 실행
 	OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);
@@ -171,7 +172,7 @@ void UHealthComponent::OnRep_CurrentHealth()
 
 void UHealthComponent::OnRep_MaxHealth()
 {
-	UE_LOG(LogTemp, Display, TEXT("UHealthComponent::MaxHealth Property changed to %f"), MaxHealth);
+	UE_LOG(HealthComponent, Display, TEXT("# %s - MaxHealth was replicated"), FUNCTION_SIG);
 
 	// 체력 변화 이벤트 실행
 	OnHealthChanged.Broadcast(CurrentHealth, MaxHealth);

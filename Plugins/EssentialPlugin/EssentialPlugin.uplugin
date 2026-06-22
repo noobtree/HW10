@@ -18,6 +18,16 @@
 		{
 			"Name": "EssentialPlugin",
 			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "Chatting",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Health",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	]

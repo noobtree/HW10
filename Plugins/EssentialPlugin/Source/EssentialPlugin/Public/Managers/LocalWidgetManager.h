@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LocalWidgetManager.generated.h"
 
+// Widget 생성 또는 등록에 관한 비동기 함수 실행 시 사용되는 함수 대리자
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWidgetCreatedDelegate, UUserWidget*, CreatedWidget);
 
 /**

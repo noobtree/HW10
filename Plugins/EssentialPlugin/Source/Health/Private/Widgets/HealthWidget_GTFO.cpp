@@ -1,10 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HealthWidget_GTFO.h"
+#include "Widgets/HealthWidget_GTFO.h"
 #include "Components/TextBlock.h"
 #include "Components/SizeBox.h"
 #include "Components/HealthComponent.h"
+#include "LogUtility.h"
 
 void UHealthWidget_GTFO::NativeConstruct()
 {
@@ -19,6 +20,7 @@ void UHealthWidget_GTFO::NativeConstruct()
 	// Timeline에 Curve 및 Delegate 등록
 	if (DamageBarShrinkCurve != nullptr)
 	{
+		UE_LOG(HealthWidget, Warning, TEXT("# %s - Invalid CurveFloat Asset"), FUNCTION_SIG);
 		DamageBarShrinkTimeline.AddInterpFloat(DamageBarShrinkCurve, timelineDelegate);
 	}
 
@@ -46,7 +48,8 @@ void UHealthWidget_GTFO::InitializeWidgetByComponent_Implementation(UActorCompon
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("HealthWidget Has not Initialized with Health Component!"));
+		//UE_LOG(HealthWidget, Warning, TEXT("# %s - Widget Has not Initialized with Health Component!"), FUNCTION_SIG);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, *FString::Printf(TEXT("# %s - Widget Has not Initialized with Health Component!"), FUNCTION_SIG));
 		// 체력 0% 상태로 업데이트
 		OnHealthChanged(0, 100);
 	}

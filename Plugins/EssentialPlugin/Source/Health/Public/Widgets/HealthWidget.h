@@ -4,14 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "WidgetInitializeUtilityInterface.h"
+#include "Widgets/WidgetInitializeUtilityInterface.h"
 #include "HealthWidget.generated.h"
+
+// UChatBoxWidget 클래스에서 사용할 UE_LOG 카테고리 선언 및 정의
+DECLARE_LOG_CATEGORY_EXTERN(HealthWidget, Log, All);
 
 /**
  * 
  */
 UCLASS()
-class ESSENTIALPLUGIN_API UHealthWidget : public UUserWidget, public IWidgetInitializeUtilityInterface
+class HEALTH_API UHealthWidget : public UUserWidget, public IWidgetInitializeUtilityInterface
 {
 	GENERATED_BODY()
 

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
 #include "HealthWidget.h"
 #include "Components/TimelineComponent.h"
 #include "HealthWidget_GTFO.generated.h"
@@ -12,7 +11,7 @@
  * 
  */
 UCLASS()
-class ESSENTIALPLUGIN_API UHealthWidget_GTFO : public UHealthWidget
+class HEALTH_API UHealthWidget_GTFO : public UHealthWidget
 {
 	GENERATED_BODY()
 	

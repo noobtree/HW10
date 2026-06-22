@@ -2,24 +2,22 @@
 
 using UnrealBuildTool;
 
-public class EssentialPlugin : ModuleRules
+public class Health : ModuleRules
 {
-	public EssentialPlugin(ReadOnlyTargetRules Target) : base(Target)
+	public Health(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				"EssentialPlugin"
-			}
+            }
 			);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-				"EssentialPlugin"
             }
 			);
 			
@@ -31,7 +29,7 @@ public class EssentialPlugin : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"Engine",
 				"UMG",
-				"GameplayTags"
+				"EssentialPlugin",
 			}
 			);
 			
@@ -44,7 +42,8 @@ public class EssentialPlugin : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...	
-			}
+				"EssentialPlugin",
+            }
 			);
 		
 		

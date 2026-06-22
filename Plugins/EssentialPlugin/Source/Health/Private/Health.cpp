@@ -1,15 +1,15 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "EssentialPlugin.h"
+#include "Health.h"
 
-#define LOCTEXT_NAMESPACE "FEssentialPluginModule"
+#define LOCTEXT_NAMESPACE "FHealthModule"
 
-void FEssentialPluginModule::StartupModule()
+void FHealthModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FEssentialPluginModule::ShutdownModule()
+void FHealthModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,4 +17,4 @@ void FEssentialPluginModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FEssentialPluginModule, EssentialPlugin)
+IMPLEMENT_MODULE(FHealthModule, Health)

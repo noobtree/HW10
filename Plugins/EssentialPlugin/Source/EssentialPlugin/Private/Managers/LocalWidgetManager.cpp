@@ -1,13 +1,18 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LocalWidgetManager.h"
+#include "Managers/LocalWidgetManager.h"
+#include "LogUtility.h"
+
+// ULocalWidgetManager 클래스에서 사용할 UE_LOG 카테고리 선언 및 정의
+DEFINE_LOG_CATEGORY_STATIC(LocalWidgetManager, Log, All);
 
 ULocalWidgetManager* ULocalWidgetManager::GetInstance(const UObject* WorldContextObject)
 {
 	// 객체 유효성 확인
 	if (IsValid(WorldContextObject) == false)
 	{
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - Invalid Context Object"), FUNCTION_SIG);
 		return nullptr;
 	}
 
@@ -15,6 +20,7 @@ ULocalWidgetManager* ULocalWidgetManager::GetInstance(const UObject* WorldContex
 	UWorld* World = WorldContextObject->GetWorld();
 	if (IsValid(World) == false)
 	{
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - Null Reference World"), FUNCTION_SIG);
 		return nullptr;
 	}
 
@@ -22,6 +28,7 @@ ULocalWidgetManager* ULocalWidgetManager::GetInstance(const UObject* WorldContex
 	APlayerController* Controller = WorldContextObject->GetWorld()->GetFirstPlayerController();
 	if (IsValid(Controller) == false)
 	{
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - None PlayerController was searched"), FUNCTION_SIG);
 		return nullptr;
 	}
 
@@ -42,6 +49,7 @@ UUserWidget* ULocalWidgetManager::FindWidget(const FName& WidgetName)
 
 	if (WidgetName.IsNone() == true)
 	{
+		UE_LOG(LocalWidgetManager, Display, TEXT("# %s - Invalid WidgetName"), FUNCTION_SIG);
 		return nullptr;
 	}
 
@@ -55,6 +63,7 @@ UUserWidget* ULocalWidgetManager::AddWidget(const FName& WidgetName, const TSubc
 	// 추가하려는 Widget의 이름 및 Class 유효성 확인
 	if (WidgetName.IsNone() == true || IsValid(WidgetClass) == false)
 	{
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - Invalid Widget Name or Class"), FUNCTION_SIG);
 		return nullptr;
 	}
 
@@ -70,27 +79,36 @@ UUserWidget* ULocalWidgetManager::AddWidget(const FName& WidgetName, const TSubc
 		}
 
 		// Widget 생성 및 등록 실패
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - There is Widget with the same name created as a other Widget Class"), FUNCTION_SIG);
 		return nullptr;
 	}
 	// 새로운 Widget Instance 생성 및 저장
+
+	// 기존 Widget Instance 삭제
+	WidgetMap.Remove(WidgetName);
 
 	// 로컬 플레이어 객체 얻기
 	ULocalPlayer* LocalPlayer = GetLocalPlayer();
 	if (IsValid(LocalPlayer) == false)
 	{
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - Invalid Local Player"), FUNCTION_SIG);
 		return nullptr;
 	}
 
 	// Instance 생성
-	WidgetInstance = CreateWidget(LocalPlayer->PlayerController, WidgetClass);
+	WidgetInstance = CreateWidget<UUserWidget>(LocalPlayer->PlayerController, WidgetClass);
 
 	// Instance 저장
-	WidgetMap[WidgetName] = WidgetInstance;
+	WidgetMap.Add(WidgetName, WidgetInstance);
 
 	// 해당 이름의 Widget을 기다리고 있는 이벤트 실행
-	for (const FOnWidgetCreatedDelegate& Callback : PendingTasks[WidgetName])
+	if (PendingTasks.Contains(WidgetName) == true)
 	{
-		Callback.ExecuteIfBound(WidgetInstance);
+		for (const FOnWidgetCreatedDelegate& Callback : PendingTasks[WidgetName])
+		{
+			Callback.ExecuteIfBound(WidgetInstance);
+		}
+		PendingTasks.Remove(WidgetName);
 	}
 
 	// Instance 반환
@@ -102,6 +120,7 @@ bool ULocalWidgetManager::AddWidgetInstance(const FName& WidgetName, UUserWidget
 	// 추가하려는 Widget의 이름 및 Class 유효성 확인
 	if (WidgetName.IsNone() == true || IsValid(WidgetInstance) == false)
 	{
+		UE_LOG(LocalWidgetManager, Warning, TEXT("# %s - Invalid Widget Name or Instance"), FUNCTION_SIG);
 		return false;
 	}
 
@@ -113,14 +132,19 @@ bool ULocalWidgetManager::AddWidgetInstance(const FName& WidgetName, UUserWidget
 		return ExistedInstance == WidgetInstance;
 	}
 
-	// 새로운 Widget Instance 저장
-	WidgetMap[WidgetName] = WidgetInstance;
+	// Instance 저장
+	WidgetMap.Add(WidgetName, WidgetInstance);
 
 	// 해당 이름의 Widget을 기다리고 있는 이벤트 실행
-	for (const FOnWidgetCreatedDelegate& Callback : PendingTasks[WidgetName])
+	if (PendingTasks.Contains(WidgetName) == true)
 	{
-		Callback.ExecuteIfBound(WidgetInstance);
+		for (const FOnWidgetCreatedDelegate& Callback : PendingTasks[WidgetName])
+		{
+			Callback.ExecuteIfBound(WidgetInstance);
+		}
+		PendingTasks.Remove(WidgetName);
 	}
+
 	return true;
 }
 
@@ -129,6 +153,7 @@ void ULocalWidgetManager::RequestAsync(const FName& WidgetName, const FOnWidgetC
 	// 조건이 되는 Widget의 이름 유효성 확인
 	if (WidgetName.IsNone() == true)
 	{
+		UE_LOG(LocalWidgetManager, Display, TEXT("# %s - Invalid WidgetName"), FUNCTION_SIG);
 		return;
 	}
 
@@ -149,6 +174,7 @@ bool ULocalWidgetManager::RemoveWidget(const FName& WidgetName)
 	// 제거하려는 Widget의 이름 유효성 확인
 	if (WidgetName.IsNone() == true)
 	{
+		UE_LOG(LocalWidgetManager, Display, TEXT("# %s - Invalid WidgetName"), FUNCTION_SIG);
 		return false;
 	}
 
@@ -167,11 +193,12 @@ void ULocalWidgetManager::SetWidgetHiddenInGame(const FName& WidgetName, bool bN
 	// Widget의 이름 유효성 확인
 	if (WidgetName.IsNone() == true)
 	{
+		UE_LOG(LocalWidgetManager, Display, TEXT("# %s - Invalid WidgetName"), FUNCTION_SIG);
 		return;
 	}
 
 	// 동일한 Key로 등록된 Widget Instance 얻기
-	UUserWidget* WidgetInstance = WidgetMap.FindAndRemoveChecked(WidgetName);
+	UUserWidget* WidgetInstance = FindWidget(WidgetName);
 	if (IsValid(WidgetInstance) == true)
 	{
 		// Visibility 변경

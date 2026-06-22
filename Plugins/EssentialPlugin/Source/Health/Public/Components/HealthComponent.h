@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, C
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDeathSignature, AActor*, KilledActor, class AController*, InstigatedBy, AActor*, KillCauser);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ESSENTIALPLUGIN_API UHealthComponent : public UActorComponent
+class HEALTH_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

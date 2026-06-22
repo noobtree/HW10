@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 
-class FEssentialPluginModule : public IModuleInterface
+class FHealthModule : public IModuleInterface
 {
 public:
 
