@@ -40,11 +40,11 @@ void UHealthWidget_GTFO::InitializeWidgetByComponent_Implementation(UActorCompon
 	HealthBarMaxWidth = GSystemResolution.ResX * 0.15;
 
 	// HealthComponent 확인
-	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Component);
-	if (IsValid(HealthComponent) == true)
+	UHealthComponent* HealthComp = Cast<UHealthComponent>(Component);
+	if (IsValid(HealthComp) == true)
 	{
 		// 현재 체력 상태에 맞추어 UI 업데이트
-		OnHealthChanged(HealthComponent->GetCurrentHealth(), HealthComponent->GetMaxHealth());
+		OnHealthChanged(HealthComp->GetCurrentHealth(), HealthComp->GetMaxHealth());
 	}
 	else
 	{
