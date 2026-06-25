@@ -11,7 +11,6 @@ public class Chatting : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				"Chatting",
             }
 			);
 				
@@ -19,7 +18,6 @@ public class Chatting : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-				"Chatting",
             }
 			);
 			

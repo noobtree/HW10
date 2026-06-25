@@ -11,7 +11,6 @@ public class EssentialPlugin : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				"EssentialPlugin"
 			}
 			);
 				
@@ -19,7 +18,6 @@ public class EssentialPlugin : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-				"EssentialPlugin"
             }
 			);
 			

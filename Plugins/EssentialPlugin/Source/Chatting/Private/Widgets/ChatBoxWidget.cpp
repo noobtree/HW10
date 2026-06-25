@@ -42,14 +42,14 @@ void UChatBoxWidget::InitializeWidgetByContextObject_Implementation(UObject* Con
 void UChatBoxWidget::InitializeWidgetByComponent_Implementation(UActorComponent* Component)
 {
 	// 채팅 관리 컴포넌트 확인
-	UChattingComponent* ChattingComponent = Cast<UChattingComponent>(Component);
-	if (IsValid(ChattingComponent) == false)
+	UChattingComponent* ChatComponent = Cast<UChattingComponent>(Component);
+	if (IsValid(ChatComponent) == false)
 	{
 		return;
 	}
 
 	// 채팅 수신 이벤트 연결
-	ChattingComponent->OnChatMessageReceived.AddDynamic(this, &UChatBoxWidget::OnChatMessageReceived);
+	ChatComponent->OnChatMessageReceived.AddDynamic(this, &UChatBoxWidget::OnChatMessageReceived);
 }
 
 void UChatBoxWidget::InitializeWidgetByActor_Implementation(AActor* Actor)

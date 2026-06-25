@@ -42,7 +42,7 @@ protected:
 	TObjectPtr<class UEditableTextBox> InputField;
 
 	// 수신된 채팅 내역 텍스트의 스타일을 지정한 데이터 테이블
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> LogTextStyleSet;
 
 	// 초기 Anchor

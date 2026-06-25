@@ -99,14 +99,14 @@ void UHealthComponent::InitWidget()
 		}
 
 		// Widget 생성
-		UUserWidget* HealthWidget = WidgetManager->AddWidget(FName("Health"), LocalWidgetClass);
-		if (HealthWidget == nullptr)
+		UUserWidget* WidgetInstance = WidgetManager->AddWidget(FName("Health"), LocalWidgetClass);
+		if (WidgetInstance == nullptr)
 		{
 			return;
 		}
 
-		HealthWidget->AddToViewport();
-		IWidgetInitializeUtilityInterface::Execute_InitializeWidgetByComponent(HealthWidget, this);
+		WidgetInstance->AddToViewport();
+		IWidgetInitializeUtilityInterface::Execute_InitializeWidgetByComponent(WidgetInstance, this);
 		return;
 	}
 	// Other Client의 경우

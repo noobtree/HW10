@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, C
 // 사망하였을 때 실행되는 이벤트 타입
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDeathSignature, AActor*, KilledActor, class AController*, InstigatedBy, AActor*, KillCauser);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HEALTH_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()

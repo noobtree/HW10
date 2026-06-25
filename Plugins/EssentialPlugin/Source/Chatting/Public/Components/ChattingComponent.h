@@ -24,7 +24,7 @@ namespace ChatChannels
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChatMessageReceivedSignature, const struct FChatMessage&, ChatMessage);
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class CHATTING_API UChattingComponent : public UActorComponent
 {
 	GENERATED_BODY()
