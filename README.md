@@ -150,3 +150,7 @@ IMPLEMENT_MODULE(FMySubModule, MySub)
 	]
 ```
    
+
+## 외부 모듈에 작성한 클래스 사용 시 주의사항
+* 외부 모듈에서 작성된 클래스(AMyActor)의 경우 Build.cs 파일을 수정하지 않아도 Plugin이 활성화 되어있으면 Blueprint에서 해당 클래스를 사용할 수 있지만, C++ 클래스 내부에서 사용할 수 없다.
+* C++ 코드에서 외부 모듈에 작성된 클래스를 사용하기 위해서는 Build.cs 내용 수정이 필수적이다.
