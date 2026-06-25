@@ -2,7 +2,7 @@
 
 
 #include "TestSpawner.h"
-#include "TestObstacle.h"
+#include "TestObstacle.h"	// Build.cs의 -DependencyModuleNames에 해당 클래스가 작성된 모듈 추가 필요
 
 // Sets default values
 ATestSpawner::ATestSpawner()
